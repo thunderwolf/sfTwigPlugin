@@ -1,6 +1,5 @@
 <?php
 
-// class sfTwigFsLoader extends Twig_Loader_Filesystem
 /**
  * Лоадер шаблонов приложения
  *
@@ -68,16 +67,16 @@ class sfTwigLoaderFs implements Twig_LoaderInterface
         $this->parseName($name, $namespace, $tplPath);
 
         if ($namespace === 'root') {
-            $fillFileName = sprintf('%s/templates/%s', $this->tplRootDir, $tplPath);
+            $fullFileName = sprintf('%s/templates/%s', $this->tplRootDir, $tplPath);
         } else {
-            $fillFileName = sprintf('%s/modules/%s/templates/%s', $this->tplRootDir, $namespace, $tplPath);
+            $fullFileName = sprintf('%s/modules/%s/templates/%s', $this->tplRootDir, $namespace, $tplPath);
         }
 
-        if (is_file($fillFileName)) {
-            return $this->cache[$name] = $fillFileName;
+        if (is_file($fullFileName)) {
+            return $this->cache[$name] = $fullFileName;
         }
 
-        throw new Twig_Error_Loader(sprintf('Unable to find template "%s" (full file name "%s")', $name, $fillFileName));
+        throw new Twig_Error_Loader(sprintf('Unable to find template "%s" (full file name "%s")', $name, $fullFileName));
     }
 
     /**
@@ -115,16 +114,22 @@ class sfTwigLoaderFs implements Twig_LoaderInterface
     {
         $filePath = realpath($filePath);
 
-        $str = str_replace(sfConfig::get('sf_app_module_dir'), '', $filePath);
-        $str = ltrim($str, '/\\');
-        $data = explode('/', $str);
-        if (count($data) === 3) {
-            $namespace = $data[0];
-        } else {
-            $namespace = 'root';
+        $rCount = 0;
+        $str = str_replace(sfConfig::get('sf_app_module_dir'), '', $filePath, $rCount);
+        if (false === ($moduleNamespace = $rCount === 1)) {
+            $str = str_replace(sfConfig::get('sf_app_dir'), '', $filePath, $rCount);
         }
 
-        return '@' . $namespace . '/' . basename($filePath);
-    }
+        $str = ltrim($str, '/\\');
+        $data = explode('/', $str);
 
+        if ($moduleNamespace) {
+            unset($data[1]);
+        } else {
+            $data[0] = 'root';
+        }
+        $result = '@' . implode('/', $data);
+
+        return $result;
+    }
 }
