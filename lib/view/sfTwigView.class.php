@@ -12,6 +12,9 @@
 /**
  * A view that uses Twig as the templating engine.
  *
+ * @property sfEventDispatcher $dispatcher
+ * @property sfParameterHolder $attributeHolder
+ *
  * @package    sfTwigPlugin
  * @subpackage view
  * @author     Henrik Bjornskov <henrik@bearwoods.dk>
@@ -19,7 +22,6 @@
  */
 class sfTwigView extends sfPHPView
 {
-
     /**
      * @var string Extension used by twig templates. which is .html
      */
@@ -44,16 +46,17 @@ class sfTwigView extends sfPHPView
      */
     protected function renderFile($file)
     {
-        $this->loadCoreAndStandardHelpers();
-
         if (sfConfig::get('sf_logging_enabled', false)) {
             $this->dispatcher->notify(new sfEvent($this, 'application.log', array(sprintf('Render "%s"', $file))));
         }
 
-        $event = $this->dispatcher->filter(new sfEvent($this, 'template.filter_parameters'), $this->attributeHolder->getAll());
+        $this->loadCoreAndStandardHelpers();
 
-        $tplName = sfTwigLoaderFs::getTplNameByFilePath($file);
+        $event = $this->dispatcher->filter(
+            new sfEvent($this, 'template.filter_parameters'),
+            $this->attributeHolder->getAll()
+        );
 
-        return $this->getEngine()->loadTemplate($tplName)->render($event->getReturnValue());
+        return $this->getEngine()->loadTemplate($file)->render($event->getReturnValue());
     }
 }

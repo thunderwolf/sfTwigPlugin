@@ -6,7 +6,6 @@
  */
 class sfTwigRenderEngine
 {
-
     const SF_CONTEXT_ATTR_NAME = 'twig.engine';
 
     /**
@@ -50,13 +49,15 @@ class sfTwigRenderEngine
     /**
      * Создание и предварительное конфигурирование лоадера
      *
-     * @return sfTwigLoaderFs
+     * @return Twig_LoaderInterface
      */
     protected function createLoader()
     {
-        $loader = new sfTwigLoaderFs(sfConfig::get('sf_app_dir'));
-
-        return $loader;
+        return new Twig_Loader_Chain([
+            new sfTwigLoaderDirect(sfConfig::get('sf_app_dir')),
+            new sfTwigLoaderDirect(sfConfig::get('sf_plugins_dir')),
+            new sfTwigLoaderNamespace($this->sfContext->getConfiguration())
+        ]);
     }
 
     /**
@@ -106,5 +107,4 @@ class sfTwigRenderEngine
 
         return $this->twig;
     }
-
 }
