@@ -1,0 +1,19 @@
+{
+    "name": "goldenclone/sf-twig-plugin",
+    "type": "symfony1-plugin",
+    "description": "Symfony Plugin to enable Twig usage in templates",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Henrik Bjørnskov",
+            "email": "henrik@bjrnskov.dk"
+        },
+        {
+            "name": "Yuriy Berest",
+            "email": "djua.com@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "1.*"
+    }
+}

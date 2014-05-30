@@ -20,18 +20,13 @@
  */
 class sfTwigPluginConfiguration extends sfPluginConfiguration
 {
-    const VERSION = '0.1.4-DEV';
+    const VERSION = '0.1.5-DEV';
 
     /**
      * @see sfPluginConfiguration
      */
-    public function configure()
+    public function initialize()
     {
-        $defaultDir = dirname(__FILE__) . '/../lib/vendor/Twig/lib';
-        require_once sfConfig::get('sf_twig_lib_dir', $defaultDir) . '/Twig/Autoloader.php';
-
-        Twig_Autoloader::register();
-
         $this->dispatcher->connect('context.load_factories', array($this, 'listenToLoadFactoriesEvent'));
     }
 
@@ -43,5 +38,4 @@ class sfTwigPluginConfiguration extends sfPluginConfiguration
         /** @var sfContext $sfContext */
         sfTwigRenderEngine::addEngineToContext($event->getSubject());
     }
-
 }
